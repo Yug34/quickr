@@ -15,6 +15,10 @@ export const Layout = styled(Flex)`
   @media (max-width: 1440px) {
     padding: 0;  
   }
+  
+  * {
+      box-sizing: border-box;
+  }
 `;
 
 export const LoggedInAs = styled(Flex)`
@@ -33,15 +37,6 @@ export const AppContainer = styled(Flex)`
   position: relative;
   justify-content: center;
   align-items: center;
-`;
-
-export const ChatContainer = styled(Flex)`
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 400px;
-  max-width: 100%;
 `;
 
 export const Button = styled.button`

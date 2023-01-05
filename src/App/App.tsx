@@ -30,6 +30,7 @@ const App = () => {
             onValue(ref(database, `chats/${JoinStrings(selectedFriend.friendUID, user!.userUID)}`), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
+                    //When chat has messages:
                     const chatMessages: MessageType[] = Object.entries(data).map(([_, value]: [string, any]): MessageType => value);
                     chatMessages.map((message: MessageType): void => {
                         if(message.author !== user?.userUID) {
@@ -37,6 +38,9 @@ const App = () => {
                         }
                     });
                     setChatMessages(chatMessages);
+                } else {
+                    //Empty chat:
+                    setChatMessages([]);
                 }
             });
         }
@@ -61,7 +65,7 @@ const App = () => {
         });
     }, [userFriends, user?.userUID]);
 
-    const sendMessage = useCallback((message: string, friendUID: string, userUID: string) => {
+    const sendMessage = useCallback((message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>) => {
         if (message.length > 0) {
             set(ref(database, `users/${userUID}/friends/${friendUID}/lastMessage`), message);
             set(ref(database, `users/${friendUID}/friends/${userUID}/lastMessage`), message);
@@ -72,6 +76,8 @@ const App = () => {
                 timeStamp: Date.now(),
                 status: "sent"
             });
+
+            messageRef.current!.value = "";
         }
     }, []);
 
@@ -227,13 +233,11 @@ const App = () => {
                                     />
                                 ))}
                             </Styles.UsersContainer>
-                            <Styles.ChatContainer>
-                                {selectedFriend ? (
-                                    <Chat user={user!} sendMessage={sendMessage} friend={selectedFriend} chatMessages={chatMessages} />
-                                ) : (
-                                    <div>Login or Sign-Up to chat!</div>
-                                )}
-                            </Styles.ChatContainer>
+                            {selectedFriend ? (
+                                <Chat user={user!} sendMessage={sendMessage} friend={selectedFriend} chatMessages={chatMessages} />
+                            ) : (
+                                <div>Login or Sign-Up to chat!</div>
+                            )}
                         </Flex>
                     </>
                     ) : (
