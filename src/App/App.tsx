@@ -158,6 +158,15 @@ const App = () => {
         setSelectedFriend(null);
     }, []);
 
+    const unsendMessage = (timeStamp: number, friendUID: string, userUID: string) => {
+        set(ref(database, `chats/${JoinStrings(friendUID, userUID)}/${timeStamp}`), {
+            author: userUID,
+            status: "unsent",
+            message: "",
+            timeStamp: Date.now()
+        });
+    };
+
     const SetMessageStatus = (userUID: string, friendUID: string, messageTimestamp: number, status: string) => {
         set(ref(database, `chats/${JoinStrings(userUID, friendUID)}/${messageTimestamp}/status`), status);
     }
@@ -250,7 +259,14 @@ const App = () => {
                                 ))}
                             </Styles.UsersContainer>
                             {selectedFriend ? (
-                                <Chat removeFriend={removeFriend} user={user!} sendMessage={sendMessage} friend={selectedFriend} chatMessages={chatMessages} />
+                                <Chat
+                                    removeFriend={removeFriend}
+                                    user={user!}
+                                    sendMessage={sendMessage}
+                                    friend={selectedFriend}
+                                    chatMessages={chatMessages}
+                                    unsendMessage={unsendMessage}
+                                />
                             ) : (
                                 <div>Login or Sign-Up to chat!</div>
                             )}

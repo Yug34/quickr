@@ -13,6 +13,7 @@ interface ChatProps {
     friend: FriendsType;
     chatMessages: MessageType[];
     removeFriend: any;
+    unsendMessage: any;
 }
 
 const ChatContainer = styled(Flex)`
@@ -99,46 +100,56 @@ const ChatMessageContainer = styled(Flex)<{ isOwn: boolean; }>`
     column-gap: 0.5rem;
 `;
 
-const ThreeDotsContainer = styled.div`
+const UnsendCTAContainer = styled.div`
     position: relative;
     margin: 0 0.5rem 0 0.25rem;
     cursor: pointer;
-    
-    &:hover .tooltipText {
-        visibility: visible;
-    }
-`;
-
-const Tooltip = styled.div`
-  visibility: hidden;
-  white-space: pre;
-  width: fit-content;
-  min-width: clamp(120px, ${px2vw(140)}, 140px);
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 12px;
-  right: 20px;
-  bottom: -4px;
-  
-  position: absolute;
-  z-index: 1;
-  
-  &:hover {
-    visibility: visible;
-  }
 `;
 
 //TODO:
-const ThreeDots = (): JSX.Element => (
-    <ThreeDotsContainer>
-        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em"
-             xmlns="http://www.w3.org/2000/svg">
-            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-        </svg>
-        <Tooltip onClick={() => console.log("TODO")} className={"tooltipText"}>Unsend Message</Tooltip>
-    </ThreeDotsContainer>
+interface UnsendMessageProps {
+    timeStamp: number;
+    friendUID: string;
+    userUID: string;
+    unsendMessage: any;
+}
+
+interface SVGProps {
+    color?: string;
+    size?: string;
+}
+
+const SentCheck = ({color, size}: SVGProps) => (
+    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
+        <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"/>
+    </svg>
+);
+
+const DeliveredCheck = ({color, size}: SVGProps) => (
+    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0.5rem" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
+        <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 48c110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200-110.532 0-200-89.451-200-200 0-110.532 89.451-200 200-200m140.204 130.267l-22.536-22.718c-4.667-4.705-12.265-4.736-16.97-.068L215.346 303.697l-59.792-60.277c-4.667-4.705-12.265-4.736-16.97-.069l-22.719 22.536c-4.705 4.667-4.736 12.265-.068 16.971l90.781 91.516c4.667 4.705 12.265 4.736 16.97.068l172.589-171.204c4.704-4.668 4.734-12.266.067-16.971z" />
+    </svg>
+);
+
+const ReadCheck = ({color, size}: SVGProps) => (
+    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
+        <path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/>
+    </svg>
+);
+
+const DeleteBin = ({color, size}: SVGProps) => (
+    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0" viewBox="0 0 24 24" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
+        <g>
+            <path fill="transparent" d="M0 0h24v24H0z"/>
+            <path d="M7 4V2h10v2h5v2h-2v15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6H2V4h5zM6 6v14h12V6H6zm3 3h2v8H9V9zm4 0h2v8h-2V9z"/>
+        </g>
+    </svg>
+);
+
+const UnsendMessageCTA = ({timeStamp, friendUID, userUID, unsendMessage}: UnsendMessageProps): JSX.Element => (
+    <UnsendCTAContainer onClick={() => unsendMessage(timeStamp, friendUID, userUID)}>
+        <DeleteBin color={"red"}/>
+    </UnsendCTAContainer>
 );
 
 const ChatNotch = styled.div<{ isOwn: boolean; }>`
@@ -167,29 +178,6 @@ const RemoveFriendCTA = styled(Flex)`
         background: #d04e44;
     }
 `;
-
-interface SVGProps {
-    color?: string;
-    size?: string;
-}
-
-const SentCheck = ({color, size}: SVGProps) => (
-    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
-        <path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"/>
-    </svg>
-);
-
-const DeliveredCheck = ({color, size}: SVGProps) => (
-    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0.5rem" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
-        <path d="M256 8C119.033 8 8 119.033 8 256s111.033 248 248 248 248-111.033 248-248S392.967 8 256 8zm0 48c110.532 0 200 89.451 200 200 0 110.532-89.451 200-200 200-110.532 0-200-89.451-200-200 0-110.532 89.451-200 200-200m140.204 130.267l-22.536-22.718c-4.667-4.705-12.265-4.736-16.97-.068L215.346 303.697l-59.792-60.277c-4.667-4.705-12.265-4.736-16.97-.069l-22.719 22.536c-4.705 4.667-4.736 12.265-.068 16.971l90.781 91.516c4.667 4.705 12.265 4.736 16.97.068l172.589-171.204c4.704-4.668 4.734-12.266.067-16.971z" />
-    </svg>
-);
-
-const ReadCheck = ({color, size}: SVGProps) => (
-    <svg stroke={color || "currentColor"} fill={color || "currentColor"} strokeWidth="0" viewBox="0 0 512 512" height={size || "1em"} width={size || "1em"} xmlns="http://www.w3.org/2000/svg">
-        <path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/>
-    </svg>
-);
 
 const Ring = styled.div`
     display: inline-block;
@@ -251,20 +239,23 @@ const RenderMessageStatus = ({status}: RenderProps): JSX.Element => {
     if (status === "sent") {
         return <SentCheck/>;
     }
+    if (status === "unsent") {
+        return <DeleteBin color={"red"}/>;
+    }
     return <SpinnerDiv/>
-}
+};
 
 const ChatMessage = ({message, isOwn}: ChatMessageProps): JSX.Element => (
     <Flex style={{position: 'relative'}} width={"fit-content"} justify={isOwn ? 'flex-end' : 'flex-start'}>
         <ChatMessageContainer isOwn={isOwn} key={message.timeStamp}>
-            {message.message}
-            {isOwn && <RenderMessageStatus status={message.status}/>}
+        {message.status === "unsent" ? "Message has been unsent" : message.message}
+        {isOwn && <RenderMessageStatus status={message.status}/>}
         </ChatMessageContainer>
         <ChatNotch isOwn={isOwn}/>
     </Flex>
 );
 
-const Chat = ({user, friend, chatMessages, sendMessage, removeFriend}: ChatProps) => {
+const Chat = ({user, friend, chatMessages, sendMessage, removeFriend, unsendMessage}: ChatProps) => {
     const messageRef = React.createRef<HTMLInputElement>();
 
     const submitOnEnter = (e: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -287,7 +278,14 @@ const Chat = ({user, friend, chatMessages, sendMessage, removeFriend}: ChatProps
                     const isOwn = message.author === user.userUID;
                     return (
                         <ChatMsg key={message.timeStamp} isOwn={isOwn}>
-                            {isOwn && <ThreeDots/>}
+                            {(isOwn && message.status !== "unsent") && (
+                                <UnsendMessageCTA
+                                    timeStamp={message.timeStamp}
+                                    userUID={user.userUID}
+                                    friendUID={friend.friendUID}
+                                    unsendMessage={unsendMessage}
+                                />
+                            )}
                             <ChatMessage isOwn={isOwn} message={message}/>
                         </ChatMsg>
                     );
