@@ -12,9 +12,11 @@ export interface UserType {
     isOnline: boolean;
 }
 
+export type MessageStatus = "sent" | "delivered" | "read";
+
 export interface MessageType {
     message: string;
     author: string;
     timeStamp: number;
-    status: "sent" | "delivered" | "read";
+    status: MessageStatus;
 }

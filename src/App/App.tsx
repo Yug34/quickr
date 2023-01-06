@@ -117,8 +117,12 @@ const App = () => {
                     onValue(ref(database, `users/${user.uid}`), (snapshot) => {
                         const data = snapshot.val();
                         //TODO: Fix types
-                        const userFriends: FriendsType[] = Object.entries(data.friends).map(([_, value]: [string, any]) => value);
-                        setUserFriends(userFriends);
+                        if (data.friends === null || data.friends === undefined) {
+                            setUserFriends([]);
+                        } else {
+                            const userFriends: FriendsType[] = Object.entries(data.friends).map(([_, value]: [string, any]) => value);
+                            setUserFriends(userFriends);
+                        }
 
                         userFriends.map((friend: FriendsType) => {
                             get(ref(database, `chats/${JoinStrings(user.uid, friend.friendUID)}`)).then((snapshot) => {
@@ -127,7 +131,7 @@ const App = () => {
                                 //Better way to do this?
                                 Object.entries(messages).map(([_, message]: [string, any]) => {
                                     if (message.author !== user.uid && message.status === "sent") {
-                                        set(ref(database, `chats/${JoinStrings(user.uid, friend.friendUID)}/${message.timeStamp}/status`), "delivered");
+                                        SetMessageStatus(user.uid, friend.friendUID, message.timeStamp, "delivered");
                                     }
                                 });
                             }).catch((error) => console.log(error));
@@ -144,7 +148,19 @@ const App = () => {
                     console.log(errorMessage);
                 });
         });
-    }, [auth]);
+    }, [auth, userFriends]);
+
+    const removeFriend = useCallback((friendUID: string, userUID: string) => {
+        set(ref(database, `users/${userUID}/friends/${friendUID}`), null);
+        set(ref(database, `users/${friendUID}/friends/${userUID}`), null);
+        set(ref(database, `chats/${JoinStrings(friendUID, userUID)}`), null);
+
+        setSelectedFriend(null);
+    }, []);
+
+    const SetMessageStatus = (userUID: string, friendUID: string, messageTimestamp: number, status: string) => {
+        set(ref(database, `chats/${JoinStrings(userUID, friendUID)}/${messageTimestamp}/status`), status);
+    }
 
     const addFriend = useCallback((e: SyntheticEvent, friendUID: string, user: UserType) => {
         e.preventDefault();
@@ -218,7 +234,7 @@ const App = () => {
                         <Styles.LoggedInAs>
                             Logged in as <b>{user.email}</b>
                             User ID: <b style={{cursor: 'pointer'}} onClick={() => copyUUID(user!.userUID)}>{user!.userUID}</b>
-                            <img src={copyIcon} alt={"Copy"}/>
+                            <img style={{cursor: 'pointer'}} onClick={() => copyUUID(user!.userUID)} src={copyIcon} alt={"Copy"}/>
                         </Styles.LoggedInAs>
                         <Flex height={"100%"}>
                             <Styles.UsersContainer>
@@ -234,7 +250,7 @@ const App = () => {
                                 ))}
                             </Styles.UsersContainer>
                             {selectedFriend ? (
-                                <Chat user={user!} sendMessage={sendMessage} friend={selectedFriend} chatMessages={chatMessages} />
+                                <Chat removeFriend={removeFriend} user={user!} sendMessage={sendMessage} friend={selectedFriend} chatMessages={chatMessages} />
                             ) : (
                                 <div>Login or Sign-Up to chat!</div>
                             )}
