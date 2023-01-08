@@ -1,4 +1,4 @@
-import { Flex } from "../Common/Flex";
+import {Flex} from "../Common/Flex";
 import React from "react";
 import styled from "styled-components";
 import ProfilePic from "../../static/profilePicture.svg";
@@ -9,6 +9,7 @@ interface UserCardProps {
     lastTalked: number;
     lastMessage: string;
     openUserChat: any;
+    isOnline: boolean;
 }
 
 const ProfilePicture = styled.img`
@@ -18,6 +19,7 @@ const ProfilePicture = styled.img`
 `;
 
 const UserCardContainer = styled(Flex)`
+  padding: 4px 8px 4px 4px;
   color: #000000;
   align-items: center;
   cursor: pointer;
@@ -34,7 +36,25 @@ const UserName = styled.div`
   text-overflow: ellipsis;
 `;
 
-const UserCard = ({name, lastTalked, lastMessage, openUserChat}: UserCardProps) => {
+const BlinkingDot = styled.div`
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: green;
+
+    animation: 1s blink ease infinite;
+
+    @keyframes "blink" {
+      from, to {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+`;
+
+const UserCard = ({name, lastTalked, lastMessage, openUserChat, isOnline}: UserCardProps) => {
     const lastTalkedTime = new Date(lastTalked).toLocaleDateString('en-GB', {
         year: "2-digit",
         month: "2-digit",
@@ -49,11 +69,14 @@ const UserCard = ({name, lastTalked, lastMessage, openUserChat}: UserCardProps) 
         <UserCardContainer onClick={() => openUserChat()}>
             <ProfilePicture src={ProfilePic} alt={"Profile Icon"}/>
             <Flex flexDirection={'column'} ml={`clamp(0.5rem, ${px2vw(16)}, 1rem)`}>
-                <Flex justify={'space-between'}>
+                <Flex justify={'space-between'} align={"center"}>
                     <UserName>{removeEmailProvider(name)}</UserName>
                     <div>{lastTalkedTime}</div>
                 </Flex>
-                <div>{trimStringToLength(lastMessage, 40)}</div>
+                <Flex justify={'space-between'} align={"center"}>
+                    {trimStringToLength(lastMessage, 30)}
+                    {isOnline && <BlinkingDot/>}
+                </Flex>
             </Flex>
         </UserCardContainer>
     );

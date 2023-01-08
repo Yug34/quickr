@@ -13,14 +13,13 @@ export const ChatContainer = styled(Flex)`
 `;
 
 export const MessagesScrollContainer = styled(Flex)`
-    // height: 100%;
-    // max-height: 100%;
     flex-direction: column;
     overflow-y: auto;
     flex: 1 1 0;
 `;
 
 export const MessageWrapper = styled(Flex)<{ isOwn: boolean; }>`
+    line-break: anywhere;
     width: 85%;
     align-self: ${(props) => props.isOwn ? "end" : "start"};
     justify-content: ${(props) => props.isOwn ? "flex-end" : "flex-start"};

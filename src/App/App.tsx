@@ -239,15 +239,18 @@ const App = () => {
                         <Flex height={"100%"}>
                             <Styles.UsersContainer>
                                 <Styles.AddFriendCTA onClick={openAddFriendModal}>Add a friend</Styles.AddFriendCTA>
-                                {userFriends.length !== 0 && userFriends.map((friend) => (
-                                    <UserCard
-                                        openUserChat={() => openUserChat(friend)}
-                                        key={friend.friendUID}
-                                        name={friend.email}
-                                        lastTalked={friend.timeStamp}
-                                        lastMessage={friend.lastMessage}
-                                    />
-                                ))}
+                                <Flex flexDirection={"column"} style={{overflowY: "auto", flex: "1 1 0"}}>
+                                    {userFriends.length !== 0 && userFriends.map((friend) => (
+                                        <UserCard
+                                            isOnline={friend.isOnline}
+                                            openUserChat={() => openUserChat(friend)}
+                                            key={friend.friendUID}
+                                            name={friend.email}
+                                            lastTalked={friend.timeStamp}
+                                            lastMessage={friend.lastMessage}
+                                        />
+                                    ))}
+                                </Flex>
                             </Styles.UsersContainer>
                             {selectedFriend ? (
                                 <Chat

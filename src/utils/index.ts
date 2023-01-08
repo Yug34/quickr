@@ -9,13 +9,17 @@ export const trimStringToLength = (text: string, length: number): string => {
     if (text.length > length) {
         let cumulativeLength = 0;
         //Logic to only split the string only after a word is complete
-        text.split(" ").forEach((str) => {
-            if (cumulativeLength + str.length >= length) {
-                return cumulativeLength;
-            }
-            cumulativeLength += str.length;
-        });
-        return text.substring(0, cumulativeLength + 1) + "...";
+        if (text.includes(" ")) {
+            text.split(" ").forEach((str) => {
+                if (cumulativeLength + str.length >= length) {
+                    return cumulativeLength;
+                }
+                cumulativeLength += str.length;
+            });
+            return text.substring(0, cumulativeLength + 1) + "...";
+        } else {
+            return text.substring(0, length - 5) + "...";
+        }
     }
     //return as is if string is small
     return text;
