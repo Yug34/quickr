@@ -1,16 +1,22 @@
-import React, { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, {SyntheticEvent, useCallback, useEffect, useState} from 'react';
 import UserCard from "../Components/UserCard";
-import { Flex } from "../Components/Common/Flex";
+import {Flex} from "../Components/Common/Flex";
 import * as Styles from "./App.Styles";
-import { database } from "../firebase";
-import { get, onValue, ref, set, onDisconnect } from 'firebase/database';
-import { createUserWithEmailAndPassword, getAuth, setPersistence, signInWithEmailAndPassword, browserLocalPersistence } from "firebase/auth";
-import LoginSignupModal from "../Components/LoginSignupModal";
-import FriendModal from "../Components/FriendModal";
+import {database} from "../firebase";
+import {get, onDisconnect, onValue, ref, set} from 'firebase/database';
+import {
+    browserLocalPersistence,
+    createUserWithEmailAndPassword,
+    getAuth,
+    setPersistence,
+    signInWithEmailAndPassword
+} from "firebase/auth";
+import LoginSignupModal from "../Components/Common/CommonModal/LoginSignupModal";
+import FriendModal from "../Components/Common/CommonModal/FriendModal";
 import copyIcon from "../static/copyIcon.svg";
-import { JoinStrings } from "../utils";
+import {JoinStrings} from "../utils";
 import Chat from "../Components/Chat";
-import { FriendsType, MessageType, UserType } from "./App.Types";
+import {FriendsType, MessageType, UserType} from "./App.Types";
 
 const App = () => {
     const [user, setUser] = useState<null | UserType>(null);
@@ -33,7 +39,7 @@ const App = () => {
                     //When chat has messages:
                     const chatMessages: MessageType[] = Object.entries(data).map(([_, value]: [string, any]): MessageType => value);
                     chatMessages.map((message: MessageType): void => {
-                        if(message.author !== user?.userUID && message.status !== "unsent") {
+                        if (message.author !== user?.userUID && message.status !== "unsent") {
                             set(ref(database, `chats/${JoinStrings(selectedFriend.friendUID, user!.userUID)}/${message.timeStamp}/status`), "read");
                         }
                     });
@@ -194,14 +200,14 @@ const App = () => {
 
     const closeModal = useCallback((e: SyntheticEvent) => {
         e.preventDefault();
-        if(e.target === e.currentTarget) {
+        if (e.target === e.currentTarget) {
             setIsModalOpen(false);
         }
     }, []);
 
     const closeFriendModal = useCallback((e: SyntheticEvent) => {
         e.preventDefault();
-        if(e.target === e.currentTarget) {
+        if (e.target === e.currentTarget) {
             setIsFriendModalOpen(false);
         }
     }, []);
@@ -233,8 +239,10 @@ const App = () => {
                     <>
                         <Styles.LoggedInAs>
                             Logged in as <b>{user.email}</b>
-                            User ID: <b style={{cursor: 'pointer'}} onClick={() => copyUUID(user!.userUID)}>{user!.userUID}</b>
-                            <img style={{cursor: 'pointer'}} onClick={() => copyUUID(user!.userUID)} src={copyIcon} alt={"Copy"}/>
+                            User ID: <b style={{cursor: 'pointer'}}
+                                        onClick={() => copyUUID(user!.userUID)}>{user!.userUID}</b>
+                            <img style={{cursor: 'pointer'}} onClick={() => copyUUID(user!.userUID)} src={copyIcon}
+                                 alt={"Copy"}/>
                         </Styles.LoggedInAs>
                         <Flex height={"100%"}>
                             <Styles.UsersContainer>
@@ -262,11 +270,23 @@ const App = () => {
                                     SetMessageStatus={SetMessageStatus}
                                 />
                             ) : (
-                                <div>Login or Sign-Up to chat!</div>
+                                <Styles.SelectFriendTipContainer>
+                                    <div style={{textDecoration: 'underline', margin: '0 0 1rem 0', fontWeight: 600}}>
+                                        Add and select a friend to start chatting
+                                    </div>
+                                    {[
+                                        "1. Ask for your friend's User ID.",
+                                        "2. Click on the \"Add Friend\" button.",
+                                        "3. Paste your friend's User ID there and add them.",
+                                        "4. Now you'll be able to chat with them! :)"
+                                    ].map((tip: string) => (
+                                        <div>{tip}</div>
+                                    ))}
+                                </Styles.SelectFriendTipContainer>
                             )}
                         </Flex>
                     </>
-                    ) : (
+                ) : (
                     <Styles.Button onClick={openCreateAccountModal}>Login/Sign Up</Styles.Button>
                 )}
             </Styles.AppContainer>

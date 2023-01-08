@@ -1,13 +1,13 @@
 import React, { SyntheticEvent } from "react";
-import styled from "styled-components";
-import CommonModal from "../Common/CommonModal";
+import CommonModal from "../index";
+import * as Styles from "../Modal.Styles";
 
 interface UserType {
     userUID: string;
     email: string;
 }
 
-interface ModalProps {
+interface FriendModalProps {
     closeModal: any;
     addFriend: any;
     user: null | UserType;
@@ -15,21 +15,19 @@ interface ModalProps {
     sameUID: boolean;
 }
 
-const AddTitle = styled.div`
-    font-size: 1.5rem;
-`;
-
-const FriendModal = ({closeModal, addFriend, user, noSuchUserFound, sameUID}: ModalProps) => {
+const FriendModal = ({closeModal, addFriend, user, noSuchUserFound, sameUID}: FriendModalProps) => {
     const friendUIDRef = React.createRef<HTMLInputElement>();
 
     return (
         <CommonModal closeModal={closeModal}>
-            <AddTitle>Add a friend</AddTitle>
-            <input ref={friendUIDRef} type={"text"} name={"friendUID"}/>
+            <Styles.ModalTitle>Add a friend</Styles.ModalTitle>
+            <Styles.StyledInput ref={friendUIDRef} type={"text"} name={"friendUID"}/>
 
-            <button onClick={(e: SyntheticEvent) => addFriend(e, friendUIDRef.current!.value, user)}>
+            <Styles.ModalButton
+                onClick={(e: SyntheticEvent) => addFriend(e, friendUIDRef.current!.value, user)}
+            >
                 Add friend
-            </button>
+            </Styles.ModalButton>
 
             {noSuchUserFound && "No user found with that UUID"}
             {sameUID && "That's your own user ID stop testing me :("}

@@ -58,6 +58,14 @@ export const AddFriendCTA = styled(Button)`
   border-radius: 12px 12px 0 0;
 `;
 
+export const SelectFriendTipContainer = styled(Flex)`
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  color: #000000;
+`;
+
 export const UsersContainer = styled(Flex)`
   height: 100%;
   flex-direction: column;
