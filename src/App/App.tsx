@@ -46,15 +46,15 @@ const App = () => {
         }
     }, [selectedFriend, user]);
 
-    const openCreateAccountModal = useCallback(() => {
+    const openCreateAccountModal = useCallback((): void => {
         setIsModalOpen(true);
     }, []);
 
-    const openAddFriendModal = useCallback(() => {
+    const openAddFriendModal = useCallback((): void => {
         setIsFriendModalOpen(true);
     }, []);
 
-    const openUserChat = useCallback((friend: FriendsType) => {
+    const openUserChat = useCallback((friend: FriendsType): void => {
         setSelectedFriend(friend);
     }, []);
 

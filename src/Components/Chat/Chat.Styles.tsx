@@ -12,18 +12,17 @@ export const ChatContainer = styled(Flex)`
   color: #000000;
 `;
 
+export const MessagesScrollContainer = styled(Flex)`
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-end;
+`;
+
 export const MessageWrapper = styled(Flex)<{ isOwn: boolean; }>`
     width: 85%;
     align-self: ${(props) => props.isOwn ? "end" : "start"};
     justify-content: ${(props) => props.isOwn ? "flex-end" : "flex-start"};
     align-items: center;
-`;
-
-export const MessagesScrollContainer = styled(Flex)`
-    height: 100%;
-    overflow-y: scroll;
-    flex-direction: column;
-    justify-content: flex-end;
 `;
 
 export const ChatMessageContainer = styled(Flex)<{ isOwn: boolean; }>`

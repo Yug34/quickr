@@ -4,7 +4,6 @@ import styled from "styled-components";
 import ProfilePic from "../../static/profilePicture.svg";
 import {px2vw, trimStringToLength} from "../../utils";
 
-//TODO: LastTalked should be a date soon
 interface UserCardProps {
     name: string;
     lastTalked: number;
