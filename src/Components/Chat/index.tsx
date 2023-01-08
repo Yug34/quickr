@@ -9,8 +9,8 @@ interface ChatProps {
     sendMessage (message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>): void;
     friend: FriendsType;
     chatMessages: MessageType[];
-    removeFriend: any;
-    SetMessageStatus: any;
+    removeFriend (friendUID: string, userUID: string): void;
+    SetMessageStatus (friendUID: string, userUID: string, timeStamp: number, status: string): void;
 }
 
 interface ChatMessageProps {
@@ -54,8 +54,12 @@ const RenderMessageStatus = ({status}: RenderProps): JSX.Element => {
 const ChatMessage = ({message, isOwn}: ChatMessageProps): JSX.Element => (
     <Flex style={{position: 'relative'}} width={"fit-content"} justify={isOwn ? 'flex-end' : 'flex-start'}>
         <Styles.ChatMessageContainer isOwn={isOwn} key={message.timeStamp}>
-        {message.status === "unsent" ? "Message has been unsent" : message.message}
-        {isOwn && <RenderMessageStatus status={message.status}/>}
+            {message.status === "unsent" ? "Message has been unsent" : message.message}
+            {isOwn && (
+                <Flex mb={"4px"} flexDirection={"column"} height={"100%"} width={"fit-content"} justify={"flex-end"}>
+                    <RenderMessageStatus status={message.status}/>
+                </Flex>
+            )}
         </Styles.ChatMessageContainer>
         <Styles.ChatNotch isOwn={isOwn}/>
     </Flex>
@@ -79,11 +83,11 @@ const Chat = ({user, friend, chatMessages, sendMessage, removeFriend, SetMessage
                 </Flex>
                 <Styles.RemoveFriendCTA onClick={() => removeFriend(friend.friendUID, user.userUID)}>Remove friend</Styles.RemoveFriendCTA>
             </Styles.ChatTopBar>
-            <Styles.MsgCnt>
+            <Styles.MessagesScrollContainer>
                 {chatMessages.map((message: MessageType) => {
                     const isOwn = message.author === user.userUID;
                     return (
-                        <Styles.ChatMsg key={message.timeStamp} isOwn={isOwn}>
+                        <Styles.MessageWrapper key={message.timeStamp} isOwn={isOwn}>
                             {(isOwn && message.status !== "unsent") && (
                                 <UnsendMessageCTA
                                     timeStamp={message.timeStamp}
@@ -93,10 +97,10 @@ const Chat = ({user, friend, chatMessages, sendMessage, removeFriend, SetMessage
                                 />
                             )}
                             <ChatMessage isOwn={isOwn} message={message}/>
-                        </Styles.ChatMsg>
+                        </Styles.MessageWrapper>
                     );
                 })}
-            </Styles.MsgCnt>
+            </Styles.MessagesScrollContainer>
             <Styles.ChatInputContainer>
                 <Styles.ChatInput onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => submitOnEnter(e)} ref={messageRef}
                            type={"text"} placeholder={"Type your message here"}/>

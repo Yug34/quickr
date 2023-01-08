@@ -12,6 +12,34 @@ export const ChatContainer = styled(Flex)`
   color: #000000;
 `;
 
+export const MessageWrapper = styled(Flex)<{ isOwn: boolean; }>`
+    width: 85%;
+    align-self: ${(props) => props.isOwn ? "end" : "start"};
+    justify-content: ${(props) => props.isOwn ? "flex-end" : "flex-start"};
+    align-items: center;
+`;
+
+export const MessagesScrollContainer = styled(Flex)`
+    height: 100%;
+    overflow-y: scroll;
+    flex-direction: column;
+    justify-content: flex-end;
+`;
+
+export const ChatMessageContainer = styled(Flex)<{ isOwn: boolean; }>`
+    width: fit-content;
+    padding: ${(props) => props.isOwn ? "6px" : "10px"} 12px;
+    border-radius: 12px 12px ${(props) => props.isOwn ? "0 12px" : "12px 0"};
+    margin: ${(props) => props.isOwn ? "8px 12px 8px 0" : "8px 0 8px 12px"};
+    background: ${(props) => props.isOwn ? "#f1f1f1" : "#b2cdf7"};
+    border: 4px solid ${(props) => props.isOwn ? "#b2cdf7" : "#e8e8e8"};
+    color: ${(props) => props.isOwn ? "#9aaac0" : "#666666"};
+    font-weight: 600;
+    font-size: 16px;
+    align-items: center;
+    column-gap: 0.5rem;
+`;
+
 export const ProfilePicture = styled.img`
   width: 40px;
   height: 40px;
@@ -53,33 +81,6 @@ export const ChatTopBar = styled(Flex)`
   font-weight: 600;
   justify-content: space-between;
   height: 40px;
-`;
-
-export const ChatMsg = styled(Flex)<{ isOwn: boolean; }>`
-    justify-content: ${(props) => props.isOwn ? "flex-end" : "flex-start"};
-    align-items: center;
-`;
-
-
-export const MsgCnt = styled(Flex)`
-    height: 100%;
-    overflow-y: scroll;
-    flex-direction: column;
-    justify-content: flex-end;
-`;
-
-export const ChatMessageContainer = styled(Flex)<{ isOwn: boolean; }>`
-    width: fit-content;
-    padding: ${(props) => props.isOwn ? "6px" : "10px"} 12px;
-    border-radius: 12px 12px ${(props) => props.isOwn ? "0 12px" : "12px 0"};
-    margin: ${(props) => props.isOwn ? "8px 12px 8px 0" : "8px 0 8px 12px"};
-    background: ${(props) => props.isOwn ? "#f1f1f1" : "#b2cdf7"};
-    border: 4px solid ${(props) => props.isOwn ? "#b2cdf7" : "#e8e8e8"};
-    color: ${(props) => props.isOwn ? "#9aaac0" : "#666666"};
-    font-weight: 600;
-    font-size: 16px;
-    align-items: center;
-    column-gap: 0.5rem;
 `;
 
 export const UnsendCTAContainer = styled.div`

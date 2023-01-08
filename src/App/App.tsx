@@ -150,7 +150,7 @@ const App = () => {
         });
     }, [auth, userFriends]);
 
-    const removeFriend = useCallback((friendUID: string, userUID: string) => {
+    const removeFriend = useCallback((friendUID: string, userUID: string): void => {
         set(ref(database, `users/${userUID}/friends/${friendUID}`), null);
         set(ref(database, `users/${friendUID}/friends/${userUID}`), null);
         set(ref(database, `chats/${JoinStrings(friendUID, userUID)}`), null);

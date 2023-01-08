@@ -2,7 +2,7 @@ import { Flex } from "../Common/Flex";
 import React from "react";
 import styled from "styled-components";
 import ProfilePic from "../../static/profilePicture.svg";
-import {px2vw} from "../../utils";
+import {px2vw, trimStringToLength} from "../../utils";
 
 //TODO: LastTalked should be a date soon
 interface UserCardProps {
@@ -54,7 +54,7 @@ const UserCard = ({name, lastTalked, lastMessage, openUserChat}: UserCardProps) 
                     <UserName>{removeEmailProvider(name)}</UserName>
                     <div>{lastTalkedTime}</div>
                 </Flex>
-                <div>{lastMessage}</div>
+                <div>{trimStringToLength(lastMessage, 40)}</div>
             </Flex>
         </UserCardContainer>
     );
