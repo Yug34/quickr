@@ -6,11 +6,14 @@ import {FriendsType, MessageStatus, MessageType, UserType} from "../../App/App.T
 
 interface ChatProps {
     user: UserType;
-    sendMessage (message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>): void;
     friend: FriendsType;
     chatMessages: MessageType[];
-    removeFriend (friendUID: string, userUID: string): void;
-    SetMessageStatus (friendUID: string, userUID: string, timeStamp: number, status: string): void;
+
+    sendMessage(message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>): void;
+
+    removeFriend(friendUID: string, userUID: string): void;
+
+    SetMessageStatus(friendUID: string, userUID: string, timeStamp: number, status: string): void;
 }
 
 interface ChatMessageProps {
@@ -22,11 +25,12 @@ interface UnsendMessageProps {
     timeStamp: number;
     friendUID: string;
     userUID: string;
-    SetMessageStatus (friendUID: string, userUID: string, timeStamp: number, status: string): void;
+
+    SetMessageStatus(friendUID: string, userUID: string, timeStamp: number, status: string): void;
 }
 
 const UnsendMessageCTA = ({timeStamp, friendUID, userUID, SetMessageStatus}: UnsendMessageProps): JSX.Element => (
-    <Styles.UnsendCTAContainer onClick={() => SetMessageStatus(friendUID, userUID, timeStamp,"unsent")}>
+    <Styles.UnsendCTAContainer onClick={() => SetMessageStatus(friendUID, userUID, timeStamp, "unsent")}>
         <Styles.DeleteBin color={"red"}/>
     </Styles.UnsendCTAContainer>
 );
@@ -81,33 +85,37 @@ const Chat = ({user, friend, chatMessages, sendMessage, removeFriend, SetMessage
                     <Styles.ProfilePicture src={ProfilePic} alt={"Profile Icon"}/>
                     <div>{friend.email}</div>
                 </Flex>
-                <Styles.RemoveFriendCTA onClick={() => removeFriend(friend.friendUID, user.userUID)}>Remove friend</Styles.RemoveFriendCTA>
+                <Styles.RemoveFriendCTA onClick={() => removeFriend(friend.friendUID, user.userUID)}>Remove
+                    friend</Styles.RemoveFriendCTA>
             </Styles.ChatTopBar>
             <Styles.MessagesScrollContainer>
-                <Flex flexDirection={"column"} style={{overflowY: "auto"}}>
-                    {chatMessages.map((message: MessageType) => {
-                        const isOwn = message.author === user.userUID;
-                        return (
-                            <Styles.MessageWrapper key={message.timeStamp} isOwn={isOwn}>
-                                {(isOwn && message.status !== "unsent") && (
-                                    <UnsendMessageCTA
-                                        timeStamp={message.timeStamp}
-                                        userUID={user.userUID}
-                                        friendUID={friend.friendUID}
-                                        SetMessageStatus={SetMessageStatus}
-                                    />
-                                )}
-                                <ChatMessage isOwn={isOwn} message={message}/>
-                            </Styles.MessageWrapper>
-                        );
-                    })}
-                </Flex>
+                {chatMessages.map((message: MessageType) => {
+                    const isOwn = message.author === user.userUID;
+                    return (
+                        <Styles.MessageWrapper key={message.timeStamp} isOwn={isOwn}>
+                            {(isOwn && message.status !== "unsent") && (
+                                <UnsendMessageCTA
+                                    timeStamp={message.timeStamp}
+                                    userUID={user.userUID}
+                                    friendUID={friend.friendUID}
+                                    SetMessageStatus={SetMessageStatus}
+                                />
+                            )}
+                            <ChatMessage isOwn={isOwn} message={message}/>
+                        </Styles.MessageWrapper>
+                    );
+                })}
             </Styles.MessagesScrollContainer>
             <Styles.ChatInputContainer>
-                <Styles.ChatInput onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => submitOnEnter(e)} ref={messageRef}
-                           type={"text"} placeholder={"Type your message here"}/>
+                <Styles.ChatInput
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => submitOnEnter(e)}
+                    ref={messageRef}
+                    type={"text"}
+                    placeholder={"Type your message here"}
+                />
                 <Styles.StyledButton
-                    onClick={() => sendMessage(messageRef.current!.value, friend.friendUID, user.userUID, messageRef)}>
+                    onClick={() => sendMessage(messageRef.current!.value, friend.friendUID, user.userUID, messageRef)}
+                >
                     Send
                 </Styles.StyledButton>
             </Styles.ChatInputContainer>

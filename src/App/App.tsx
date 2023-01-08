@@ -158,7 +158,7 @@ const App = () => {
         setSelectedFriend(null);
     }, []);
 
-    const SetMessageStatus = (userUID: string, friendUID: string, messageTimestamp: number, status: string) => {
+    const SetMessageStatus = (userUID: string, friendUID: string, messageTimestamp: number, status: string): void => {
         set(ref(database, `chats/${JoinStrings(userUID, friendUID)}/${messageTimestamp}/status`), status);
     };
 
