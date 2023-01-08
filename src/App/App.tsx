@@ -33,7 +33,7 @@ const App = () => {
                     //When chat has messages:
                     const chatMessages: MessageType[] = Object.entries(data).map(([_, value]: [string, any]): MessageType => value);
                     chatMessages.map((message: MessageType): void => {
-                        if(message.author !== user?.userUID) {
+                        if(message.author !== user?.userUID && message.status !== "unsent") {
                             set(ref(database, `chats/${JoinStrings(selectedFriend.friendUID, user!.userUID)}/${message.timeStamp}/status`), "read");
                         }
                     });
@@ -65,7 +65,7 @@ const App = () => {
         });
     }, [userFriends, user?.userUID]);
 
-    const sendMessage = useCallback((message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>) => {
+    const sendMessage = useCallback((message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>): void => {
         if (message.length > 0) {
             set(ref(database, `users/${userUID}/friends/${friendUID}/lastMessage`), message);
             set(ref(database, `users/${friendUID}/friends/${userUID}/lastMessage`), message);
@@ -158,18 +158,9 @@ const App = () => {
         setSelectedFriend(null);
     }, []);
 
-    const unsendMessage = (timeStamp: number, friendUID: string, userUID: string) => {
-        set(ref(database, `chats/${JoinStrings(friendUID, userUID)}/${timeStamp}`), {
-            author: userUID,
-            status: "unsent",
-            message: "",
-            timeStamp: Date.now()
-        });
-    };
-
     const SetMessageStatus = (userUID: string, friendUID: string, messageTimestamp: number, status: string) => {
         set(ref(database, `chats/${JoinStrings(userUID, friendUID)}/${messageTimestamp}/status`), status);
-    }
+    };
 
     const addFriend = useCallback((e: SyntheticEvent, friendUID: string, user: UserType) => {
         e.preventDefault();
@@ -265,7 +256,7 @@ const App = () => {
                                     sendMessage={sendMessage}
                                     friend={selectedFriend}
                                     chatMessages={chatMessages}
-                                    unsendMessage={unsendMessage}
+                                    SetMessageStatus={SetMessageStatus}
                                 />
                             ) : (
                                 <div>Login or Sign-Up to chat!</div>
