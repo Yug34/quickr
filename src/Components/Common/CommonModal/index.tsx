@@ -1,17 +1,17 @@
-import React from "react";
+import React, {SyntheticEvent} from "react";
 import * as Styles from "./Modal.Styles";
 
 interface CommonModalProps {
-    closeModal: any;
+    closeModal(e: SyntheticEvent): void;
     children: React.ReactNode;
 }
 
 const CommonModal = ({ closeModal, children }: CommonModalProps) => {
     return (
         <Styles.ModalOverlay onClick={closeModal}>
-            <Styles.InputContainer>
+            <Styles.ModalContainer>
                 {children}
-            </Styles.InputContainer>
+            </Styles.ModalContainer>
         </Styles.ModalOverlay>
     );
 };

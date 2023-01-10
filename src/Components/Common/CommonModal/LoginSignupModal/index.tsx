@@ -4,9 +4,9 @@ import CommonModal from "../index";
 import * as Styles from "../Modal.Styles";
 
 interface LoginModalProps {
-    createAccount: any;
-    closeModal: any;
-    signIn: any;
+    closeModal(e: SyntheticEvent): void;
+    createAccount(e: SyntheticEvent, email: string, password: string): void;
+    signIn(e: SyntheticEvent, email: string, password: string): void;
 }
 
 const Note = styled.small`

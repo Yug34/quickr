@@ -8,8 +8,8 @@ interface UserType {
 }
 
 interface FriendModalProps {
-    closeModal: any;
-    addFriend: any;
+    closeModal(e: SyntheticEvent): void;
+    addFriend(e: SyntheticEvent, friendUID: string, user: UserType): void;
     user: null | UserType;
     noSuchUserFound: boolean;
     sameUID: boolean;
@@ -24,7 +24,7 @@ const FriendModal = ({closeModal, addFriend, user, noSuchUserFound, sameUID}: Fr
             <Styles.StyledInput ref={friendUIDRef} type={"text"} name={"friendUID"}/>
 
             <Styles.ModalButton
-                onClick={(e: SyntheticEvent) => addFriend(e, friendUIDRef.current!.value, user)}
+                onClick={(e: SyntheticEvent) => addFriend(e, friendUIDRef.current!.value, user!)}
             >
                 Add friend
             </Styles.ModalButton>

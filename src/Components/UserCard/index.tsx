@@ -3,12 +3,13 @@ import React from "react";
 import styled from "styled-components";
 import ProfilePic from "../../static/profilePicture.svg";
 import {px2vw, trimStringToLength} from "../../utils";
+import {FriendsType} from "../../App/App.Types";
 
 interface UserCardProps {
     name: string;
     lastTalked: number;
     lastMessage: string;
-    openUserChat: any;
+    openUserChat(friend: FriendsType): void;
     isOnline: boolean;
 }
 

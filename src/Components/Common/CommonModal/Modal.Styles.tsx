@@ -19,7 +19,7 @@ export const ModalOverlay = styled.div`
     align-items: center;
 `;
 
-export const InputContainer = styled(Flex)`
+export const ModalContainer = styled(Flex)`
     border: 5px solid #b2cdf7;
     border-radius: 1.5rem;
     background: #dadada;
@@ -58,7 +58,7 @@ export const StyledInput = styled.input`
     padding: 0 20px;
     width: 100%;
     height: 1.5rem;
-    border-radius: 20px 0 0 20px;
+    border-radius: 20px;
     border: 2px solid #b2cdf7;
     outline: none;
     text-align: center;

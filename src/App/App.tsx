@@ -37,7 +37,7 @@ const App = () => {
                 const data = snapshot.val();
                 if (data) {
                     //When chat has messages:
-                    const chatMessages: MessageType[] = Object.entries(data).map(([_, value]: [string, any]): MessageType => value);
+                    const chatMessages: MessageType[] = Object.values(data);
                     chatMessages.map((message: MessageType): void => {
                         if (message.author !== user?.userUID && message.status !== "unsent") {
                             set(ref(database, `chats/${JoinStrings(selectedFriend.friendUID, user!.userUID)}/${message.timeStamp}/status`), "read");
@@ -126,22 +126,22 @@ const App = () => {
                         if (data.friends === null || data.friends === undefined) {
                             setUserFriends([]);
                         } else {
-                            const userFriends: FriendsType[] = Object.entries(data.friends).map(([_, value]: [string, any]) => value);
+                            const userFriends: FriendsType[] = Object.values(data.friends);
                             setUserFriends(userFriends);
-                        }
 
-                        userFriends.map((friend: FriendsType) => {
-                            get(ref(database, `chats/${JoinStrings(user.uid, friend.friendUID)}`)).then((snapshot) => {
-                                const messages = snapshot.val();
-                                //TODO:
-                                //Better way to do this?
-                                Object.entries(messages).map(([_, message]: [string, any]) => {
-                                    if (message.author !== user.uid && message.status === "sent") {
-                                        SetMessageStatus(user.uid, friend.friendUID, message.timeStamp, "delivered");
-                                    }
-                                });
-                            }).catch((error) => console.log(error));
-                        });
+                            userFriends.map((friend: FriendsType) => {
+                                get(ref(database, `chats/${JoinStrings(user.uid, friend.friendUID)}`)).then((snapshot) => {
+                                    const messages: MessageType[] = snapshot.val();
+                                    //TODO:
+                                    //Better way to do this?
+                                    Object.values(messages).map((message: MessageType): void => {
+                                        if (message.author !== user.uid && message.status === "sent") {
+                                            SetMessageStatus(user.uid, friend.friendUID, message.timeStamp, "delivered");
+                                        }
+                                    });
+                                }).catch((error) => console.log(error));
+                            });
+                        }
                     });
 
                     setIsModalOpen(false);
@@ -154,7 +154,7 @@ const App = () => {
                     console.log(errorMessage);
                 });
         });
-    }, [auth, userFriends]);
+    }, [auth]);
 
     const removeFriend = useCallback((friendUID: string, userUID: string): void => {
         set(ref(database, `users/${userUID}/friends/${friendUID}`), null);
@@ -198,7 +198,7 @@ const App = () => {
         }
     }, []);
 
-    const closeModal = useCallback((e: SyntheticEvent) => {
+    const closeLoginModal = useCallback((e: SyntheticEvent) => {
         e.preventDefault();
         if (e.target === e.currentTarget) {
             setIsModalOpen(false);
@@ -222,7 +222,7 @@ const App = () => {
                 <LoginSignupModal
                     signIn={signIn}
                     createAccount={createAccount}
-                    closeModal={(e: SyntheticEvent) => closeModal(e)}
+                    closeModal={(e: SyntheticEvent) => closeLoginModal(e)}
                 />
             )}
             {isFriendModalOpen && (
@@ -280,7 +280,7 @@ const App = () => {
                                         "3. Paste your friend's User ID there and add them.",
                                         "4. Now you'll be able to chat with them! :)"
                                     ].map((tip: string) => (
-                                        <div>{tip}</div>
+                                        <div key={tip}>{tip}</div>
                                     ))}
                                 </Styles.SelectFriendTipContainer>
                             )}
