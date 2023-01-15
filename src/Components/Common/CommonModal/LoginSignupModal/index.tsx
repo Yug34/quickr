@@ -29,7 +29,7 @@ const LoginModal = ({createAccount, closeModal, signIn}: LoginModalProps) => {
         } else {
             signIn(e, email, password);
         }
-    }, []);
+    }, [signIn, createAccount]);
 
     return (
         <CommonModal closeModal={closeModal}>

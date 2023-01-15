@@ -1,16 +1,17 @@
 import {Flex} from "../Common/Flex";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import ProfilePic from "../../static/profilePicture.svg";
 import {px2vw, trimStringToLength} from "../../utils";
-import {FriendsType} from "../../App/App.Types";
+import {onValue, ref, set} from "firebase/database";
+import {database} from "../../firebase";
 
 interface UserCardProps {
     name: string;
     lastTalked: number;
     lastMessage: string;
-    openUserChat(friend: FriendsType): void;
-    isOnline: boolean;
+    openUserChat(): void;
+    friendUID: string;
 }
 
 const ProfilePicture = styled.img`
@@ -55,7 +56,15 @@ const BlinkingDot = styled.div`
     }
 `;
 
-const UserCard = ({name, lastTalked, lastMessage, openUserChat, isOnline}: UserCardProps) => {
+const UserCard = ({name, lastTalked, lastMessage, openUserChat, friendUID}: UserCardProps) => {
+    const [isUserOnline, setIsUserOnline] = useState<boolean>(false);
+
+    useEffect(() => {
+        onValue(ref(database, `users/${friendUID}/isOnline/`), (snapshot) => {
+            setIsUserOnline(snapshot.val());
+        });
+    }, []);
+
     const lastTalkedTime = new Date(lastTalked).toLocaleDateString('en-GB', {
         year: "2-digit",
         month: "2-digit",
@@ -67,7 +76,7 @@ const UserCard = ({name, lastTalked, lastMessage, openUserChat, isOnline}: UserC
     };
 
     return (
-        <UserCardContainer onClick={() => openUserChat()}>
+        <UserCardContainer onClick={openUserChat}>
             <ProfilePicture src={ProfilePic} alt={"Profile Icon"}/>
             <Flex flexDirection={'column'} ml={`clamp(0.5rem, ${px2vw(16)}, 1rem)`}>
                 <Flex justify={'space-between'} align={"center"}>
@@ -76,7 +85,7 @@ const UserCard = ({name, lastTalked, lastMessage, openUserChat, isOnline}: UserC
                 </Flex>
                 <Flex justify={'space-between'} align={"center"}>
                     {trimStringToLength(lastMessage, 30)}
-                    {isOnline && <BlinkingDot/>}
+                    {isUserOnline && <BlinkingDot/>}
                 </Flex>
             </Flex>
         </UserCardContainer>

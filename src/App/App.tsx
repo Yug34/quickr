@@ -1,3 +1,9 @@
+//bug reproduction:
+//  2 friends: user1, user2
+//  user2 removes user1 from friends (onDisconnect is canceled)
+//  user1 disconnects
+//  user2/friends/(user1)/isOnline = false; <--- cause of crash for user1
+
 import React, {SyntheticEvent, useCallback, useEffect, useState} from 'react';
 import UserCard from "../Components/UserCard";
 import {Flex} from "../Components/Common/Flex";
@@ -25,7 +31,7 @@ const App = () => {
     const [userFriends, setUserFriends] = useState<FriendsType[]>([]);
 
     const [isFriendModalOpen, setIsFriendModalOpen] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
     const [sameUID, setSameUID] = useState<boolean>(false);
     const [noSuchUserFound, setNoSuchUserFound] = useState<boolean>(false);
 
@@ -53,7 +59,7 @@ const App = () => {
     }, [selectedFriend, user]);
 
     const openCreateAccountModal = useCallback((): void => {
-        setIsModalOpen(true);
+        setIsLoginModalOpen(true);
     }, []);
 
     const openAddFriendModal = useCallback((): void => {
@@ -63,13 +69,6 @@ const App = () => {
     const openUserChat = useCallback((friend: FriendsType): void => {
         setSelectedFriend(friend);
     }, []);
-
-    useEffect(() => {
-        userFriends.map((friend): void => {
-            set(ref(database, `users/${friend.friendUID}/friends/${user?.userUID}/isOnline/`), true);
-            onDisconnect(ref(database, `users/${friend.friendUID}/friends/${user?.userUID}/isOnline/`)).set(false);
-        });
-    }, [userFriends, user?.userUID]);
 
     const sendMessage = useCallback((message: string, friendUID: string, userUID: string, messageRef: React.RefObject<HTMLInputElement>): void => {
         if (message.length > 0) {
@@ -92,7 +91,7 @@ const App = () => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                setIsModalOpen(false);
+                setIsLoginModalOpen(false);
                 set(ref(database, `users/${user.uid}`), {
                     email: user.email,
                     uuid: user.uid,
@@ -122,8 +121,7 @@ const App = () => {
 
                     onValue(ref(database, `users/${user.uid}`), (snapshot) => {
                         const data = snapshot.val();
-                        //TODO: Fix types
-                        if (data.friends === null || data.friends === undefined) {
+                        if (data.friends === undefined) {
                             setUserFriends([]);
                         } else {
                             const userFriends: FriendsType[] = Object.values(data.friends);
@@ -134,17 +132,19 @@ const App = () => {
                                     const messages: MessageType[] = snapshot.val();
                                     //TODO:
                                     //Better way to do this?
-                                    Object.values(messages).map((message: MessageType): void => {
-                                        if (message.author !== user.uid && message.status === "sent") {
-                                            SetMessageStatus(user.uid, friend.friendUID, message.timeStamp, "delivered");
-                                        }
-                                    });
+                                    if (messages !== null) {
+                                        Object.values(messages).map((message: MessageType): void => {
+                                            if (message.author !== user.uid && message.status === "sent") {
+                                                SetMessageStatus(user.uid, friend.friendUID, message.timeStamp, "delivered");
+                                            }
+                                        });
+                                    }
                                 }).catch((error) => console.log(error));
                             });
                         }
                     });
 
-                    setIsModalOpen(false);
+                    setIsLoginModalOpen(false);
                     onDisconnect(ref(database, `users/${user.uid}/isOnline`)).set(false);
                 })
                 .catch((error) => {
@@ -201,7 +201,7 @@ const App = () => {
     const closeLoginModal = useCallback((e: SyntheticEvent) => {
         e.preventDefault();
         if (e.target === e.currentTarget) {
-            setIsModalOpen(false);
+            setIsLoginModalOpen(false);
         }
     }, []);
 
@@ -218,7 +218,7 @@ const App = () => {
 
     return (
         <Styles.Layout>
-            {isModalOpen && (
+            {isLoginModalOpen && (
                 <LoginSignupModal
                     signIn={signIn}
                     createAccount={createAccount}
@@ -250,7 +250,8 @@ const App = () => {
                                 <Flex flexDirection={"column"} style={{overflowY: "auto", flex: "1 1 0"}}>
                                     {userFriends.length !== 0 && userFriends.map((friend) => (
                                         <UserCard
-                                            isOnline={friend.isOnline}
+                                            friendUID={friend.friendUID}
+                                            // isOnline={friend.isOnline}
                                             openUserChat={() => openUserChat(friend)}
                                             key={friend.friendUID}
                                             name={friend.email}
